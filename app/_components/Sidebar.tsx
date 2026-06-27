@@ -10,5 +10,5 @@ export const Sidebar = () => {
         <p>No conversations yet</p>
       </nav>
     </aside>
-  )
-}
+  );
+};

@@ -1,8 +1,16 @@
 {
-    "semi": false,
-    "singleQuote": true,
-    "printWidth": 80,
-    "tabWidth": 2,
-    "trailingComma": "es5",
-    "plugins": []
-  }
+  "semi": true,
+  "singleQuote": true,
+  "printWidth": 80,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": [
+    "<BUILTIN_MODULES>",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^@/(.*)$",
+    "",
+    "^[./]"
+  ]
+}
