@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'mini-claude',
-  description: 'minified claude stream chat web interface',
+  title: 'agentic-chat',
+  description: 'streaming chat web app for an agentic RAG assistant',
 };
 
 export default function RootLayout({
