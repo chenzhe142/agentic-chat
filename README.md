@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agentic Streaming Chat Web UI
+
+A streaming chat web UI for an agentic RAG assistant — renders responses token-by-token over SSE, backed by the [agentic-rag](https://github.com/chenzhe142/agentic-rag) server.
 
 ## Getting Started
 
-First, run the development server:
+Start server on [http://localhost:3000](http://localhost:3000)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Routes
+```
+/          - landing page
+/chat/[id] - streaming chat UI
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## To use agentic-rag repo API server
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+agentic-chat project is specifically built to connect with [agentic-rag](https://github.com/chenzhe142/agentic-rag) repo's API server.
 
-## Learn More
+To establish the connection locally, load `qwen2.5:7b` model via `ollama` on your laptop first.
+```shell
+ollama run qwen2.5:7b
+```
 
-To learn more about Next.js, take a look at the following resources:
+You should see something like this in terminal:
+```
+➜  ~ ollama run qwen2.5:7b
+>>> Send a message (/? for help)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Next, clone [agentic-rag](https://github.com/chenzhe142/agentic-rag) repo, and launch the following servers locally.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+In `agentic-rag/`, run
+```shell
+# mcp server
+uv run -m mcp_server.server
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# fastapi streaming chat server
+fastapi dev --entrypoint api.server:app --port 8001
+```
