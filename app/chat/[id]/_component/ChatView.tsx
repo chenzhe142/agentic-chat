@@ -5,6 +5,9 @@ import {
   FC,
   SubmitEventHandler,
   useCallback,
+  useEffect,
+  useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -18,7 +21,10 @@ type Props = {
 export const ChatView: FC<Props> = ({ id }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>('');
+  const [userMsgId, setUserMsgId] = useState<string>('');
   const { start, stop, isStreaming } = useStream();
+
+  const msgRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   const onUserTyping: ChangeEventHandler<HTMLInputElement, HTMLInputElement> = (
     e
@@ -35,8 +41,9 @@ export const ChatView: FC<Props> = ({ id }) => {
         return;
       }
 
+      const uuid = crypto.randomUUID();
       const message: Message = {
-        id: crypto.randomUUID(),
+        id: uuid,
         role: 'user',
         content: trimmedUserInput,
         timestampMsec: Date.now(),
@@ -58,6 +65,7 @@ export const ChatView: FC<Props> = ({ id }) => {
           setMessages((prev) => [...prev, message]);
           setUserInput('');
           setMessages((prev) => [...prev, modelMessage]);
+          setUserMsgId(uuid);
         },
         (event: StreamEvent) => {
           if (event.type !== 'token') {
@@ -77,12 +85,58 @@ export const ChatView: FC<Props> = ({ id }) => {
     [start, userInput]
   );
 
+  useEffect(() => {
+    msgRefs.current
+      .get(userMsgId)
+      ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }, [messages, userMsgId]);
+
+  const messageView = useMemo(() => {
+    return messages.map(({ id, role, content }) => {
+      if (role === 'assistant') {
+        return (
+          <div
+            ref={(el) => {
+              if (el) {
+                msgRefs.current.set(id, el);
+              } else {
+                msgRefs.current.delete(id);
+              }
+            }}
+            key={id}
+            className="flex"
+          >
+            <div className="mt-8 mb-8">
+              <p>{content}</p>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div
+          ref={(el) => {
+            if (el) {
+              msgRefs.current.set(id, el);
+            } else {
+              msgRefs.current.delete(id);
+            }
+          }}
+          key={id}
+          className="flex justify-end"
+        >
+          <div className="bg-blue-300 rounded-lg p-2">
+            <p>{content}</p>
+          </div>
+        </div>
+      );
+    });
+  }, [messages]);
+
   return (
     <div className="flex justify-between flex-col h-full items-center">
-      <section className="flex-1 overflow-y-scroll">
-        {messages.map((msg) => {
-          return <p key={msg.id}>{msg.content}</p>;
-        })}
+      <section className="w-full max-w-3xl mx-auto mt-8 pr-8 overflow-y-auto subtle-scrollbar">
+        {messageView}
       </section>
 
       <form onSubmit={handleSend}>
