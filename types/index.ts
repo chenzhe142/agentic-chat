@@ -42,3 +42,7 @@ export type StreamEvent =
   | ErrorStreamEvent;
 
 export type StreamEventType = StreamEvent['type'];
+
+export type ChatRequest = {
+  input: string;
+};
